@@ -2,17 +2,9 @@
 The following describes the implementation of STAN code used to draw samples from the posterior distribution of Multivariate Spatial Generalized Mixed Model (MSGLMM) given simulated Alzheimer's cognitive function data in the Excel spreadsheet CoBRASim.xlsx. R functions are also provided for computing matrices of direct- and cross-covariance functions, computing correlations in latent random fields at lag zero, and Wald's tests for the null hypothesis that a given predictor has zero impact on all dependent variables together with simultaneous confidence intervals. 
 
 ## Simulated Alzheimer's Cognitive Function Data
-\begin{table}[ht!]
-    \centering
-    \begin{tabular}{lccc}
-Variable & Description & Type & Range \\
-\hline
-ID  & Identification Number & Discrete & 1-268 \\
-\hline
-    \end{tabular}
-    \caption{Caption}
-    \label{tab:placeholder}
-\end{table}
+The Excel spreadsheet CoBRASim.xlsx contains the following variables:
+ID: Identification number, Discrete, 1-268
+x: X coordiate $-20\le x \le +20$
 
 ## STAN Code
 Stan code is partitioned into several sections including the DATA, TRANSFORMED DATA, PARAMETERS, TRANSFORMED PARAMETERS, MODEL, and GENERATED QUANTITIES sections. The DATA section is used to describe the input data. It includes the number of observations (NObs), the number of unique sites (NSites), the number of dependent variables (P), the number of independent variables (K), and the number of latent random fields (Q) in the LMC. This is followed by the $\text{NObs}\times\text{K}$ design matrix $\mathbf{X}$, and the matrix Loc of unique $x,y$ coordinates of study sites. After this, each input variable is specified as an $\text{NObs}\times 1$ vector, from $\text{Z}_1,\cdots,\text{Z}_P$. Discrete variables are specified as integer level variables with a lower bound of zero, and continuous variables are specified as real variables. Finally, the $\text{NObs}\times 1$ vector Site is specified, which contains the unique site number for each of the observations.

@@ -1,10 +1,12 @@
 # MSGLMM
+The following describes the implementation of STAN code used to draw samples from the posterior distribution of Multivariate Spatial Generalized Mixed Models (MSGLMMs)
+
+The following describes the STAN code used to implement the HMC algorithm as written for simulated data on... 
+
 Hamiltonian Markov Chain algorithm for fitting Multivariate Spatial Generalized Mixed effects Models with Linear Model of Coregionalization for latent multivariate Gaussian random field.
 
 
 ## STAN Code
-The following describes the STAN code used to implement the HMC algorithm as written for simulated data on... 
-
 Stan code is partitioned into several sections including the DATA, TRANSFORMED DATA, PARAMETERS, TRANSFORMED PARAMETERS, MODEL, and GENERATED QUANTITIES sections. The DATA section is used to describe the input data. It includes the number of observations (NObs), the number of unique sites (NSites), the number of dependent variables (P), the number of independent variables (K), and the number of latent random fields (Q) in the LMC. This is followed by the $\text{NObs}\times\text{K}$ design matrix $\mathbf{X}$, and the matrix Loc of unique $x,y$ coordinates of study sites. After this, each input variable is specified as an $\text{NObs}\times 1$ vector, from $\text{Z}_1,\cdots,\text{Z}_P$. Discrete variables are specified as integer level variables with a lower bound of zero, and continuous variables are specified as real variables. Finally, the $\text{NObs}\times 1$ vector Site is specified, which contains the unique site number for each of the observations.
 
 The \textit TRANSFORMED DATA section creates the NObs x NSite matrix mapping each of the observations to the study sites.

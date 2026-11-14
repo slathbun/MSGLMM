@@ -3,8 +3,36 @@ The following describes the implementation of STAN code used to draw samples fro
 
 ## Simulated Alzheimer's Cognitive Function Data
 The Excel spreadsheet CoBRASim.xlsx contains the following variables:
+
 ID: Identification number, Discrete, 1-268
-x: X coordiate $-20\le x \le +20$
+
+x: X coordinate, continuous, $-20\le x \le +20$
+
+y: Y coordinate, continuous, $-20\le y \le +20$
+
+edyrs: Years education, count $\ge 0$
+
+age: Age in Years
+
+black: Black race indicator, binary
+
+apoe: Indicator for Apoe genetic variant
+
+MOCA: Montreal Cognitive Assessment, discrete, 0-30
+
+WordRec: Number of Words Recalled, discrete, 0-10
+
+ReyFig: Rey Figure, discrete, 0-24
+
+BNT: Boston Naming Test, discrete, 0-30
+
+Fluency: Language Fluency, count, $\ge 0$
+
+Executive: Log Executive Task Time, continuous $-\inf < x +\inf$
+
+Clock: Clock Drawing, discrete, 0-15
+
+Logical: Logical Memory, discrete, 0-25
 
 ## STAN Code
 Stan code is partitioned into several sections including the DATA, TRANSFORMED DATA, PARAMETERS, TRANSFORMED PARAMETERS, MODEL, and GENERATED QUANTITIES sections. The DATA section is used to describe the input data. It includes the number of observations (NObs), the number of unique sites (NSites), the number of dependent variables (P), the number of independent variables (K), and the number of latent random fields (Q) in the LMC. This is followed by the $\text{NObs}\times\text{K}$ design matrix $\mathbf{X}$, and the matrix Loc of unique $x,y$ coordinates of study sites. After this, each input variable is specified as an $\text{NObs}\times 1$ vector, from $\text{Z}_1,\cdots,\text{Z}_P$. Discrete variables are specified as integer level variables with a lower bound of zero, and continuous variables are specified as real variables. Finally, the $\text{NObs}\times 1$ vector Site is specified, which contains the unique site number for each of the observations.

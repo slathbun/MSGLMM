@@ -50,7 +50,7 @@ The remainder of the DATA section specifies the distributions of each of the dep
 In the GENERATED QUANTITIES section, the covariance matrix $T=AA^T$ at lag zero together with the corresponding correlation matrix are computated. In assition, the exponential values of the regression coefficients used to compute odds and risk ratos are computed. 
 
 ## Data Preparation and Execution of STAN code
-Pick out x,y coordinates:
+The following is for fitting the MSGLMM in R: Pick out x,y coordinates:
 
 >Coords<-cbind(CoBRASim$x,CoBRASim,y)
 
@@ -67,3 +67,14 @@ Create design matrix:
 > Intercept<-rep(1,nrow(CoBRASim))
 > Xmat<-cbind(Intercept,CoBRASim$edyrs,CoBRASim$male,CoBRASim$age,CoBRASim$black,CoBRASim$apoe)
 
+Create object containing data to be input into STAN for Q=2, Q=3, and Q=4 LMCs:
+
+>LMC2Dat<-list(NObs=as.integer(268),NSite=as.integer(188),P=as.integer(8),K=as.integer(6),Q=as.integer(2),X=Xmat,Loc=Sites,Z1=CoBRASim$MOCA,Z2=CoBRASim$WordRec,Z3=CoBRASim$ReyFig,Z4=CoBRASim$BNT,Z5=CoBRASim$Fluency,Z6=CoBRASim$Executive,Z7=CoBRASim$Clock,Z8=CoBRASim$Logical,Site=site_ind)
+>LMC3Dat<-list(NObs=as.integer(268),NSite=as.integer(188),P=as.integer(8),K=as.integer(6),Q=as.integer(3),X=Xmat,Loc=Sites,Z1=CoBRASim$MOCA,Z2=CoBRASim$WordRec,Z3=CoBRASim$ReyFig,Z4=CoBRASim$BNT,Z5=CoBRASim$Fluency,Z6=CoBRASim$Executive,Z7=CoBRASim$Clock,Z8=CoBRASim$Logical,Site=site_ind)
+>LMC4Dat<-list(NObs=as.integer(268),NSite=as.integer(188),P=as.integer(8),K=as.integer(6),Q=as.integer(4),X=Xmat,Loc=Sites,Z1=CoBRASim$MOCA,Z2=CoBRASim$WordRec,Z3=CoBRASim$ReyFig,Z4=CoBRASim$BNT,Z5=CoBRASim$Fluency,Z6=CoBRASim$Executive,Z7=CoBRASim$Clock,Z8=CoBRASim$Logical,Site=site_ind)
+
+Execute STAN code.  For example, the Q=4 model may be exeduted using:
+
+>MatMod4thin1<-stan("MatNorm.stan",data=LMC4Dat,chains=4,warmup=1000,iter=3000,thin=5,cores=4,refresh=0)
+
+In this example, 4 independent Markov chains are generated using the Hamiltonian Markov Chain algorithm, on each of 4 cores. For each chain, there is a warmup of 1,000 iterates followed by 2,000 post-warm-up iterates for a total of 3,000 iterates. All chains are thinned, retaining every 5th iterate.

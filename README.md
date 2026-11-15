@@ -46,3 +46,24 @@ The remaining details of the model are specified in the MODEL section. First, th
 Under PRIORS, the elements of $w$ are indpendently sampled from a standard normal distribution, and the differences between the range parameters are indepedently sampled from the inverse gamma distribution with parameters 2 and 10. To generate samples from the matrix normal distribution, with sample $\Phi\sim InvWishart(P+4,2I_P)$ and $\zeta\sim N(0,0.5)$. Then, as specified in the TRANSFORMED PRAMETERS section, $A = \Phi^{1/2}\zeta$ will have a matrix Normal distribution with prameters I and $\Phi$. The regression coefficients are indepdnently sampled from normal distribution. One dependent variable, Z6 is assumed to be sampled from $N(\eta_6,\sigma_{\delta}^2)$, where vardelta= $\sigma_{\delta}^2$. After the prior distribution for the regression coeffients is specified, code specifies that $\sigma_{\delta}^2\sim InvGamma(3,2)$. 
 
 The remainder of the DATA section specifies the distributions of each of the dependent variables $Z_1,\cdots\Z_P$. For example, the elements of Z1 are assumed to be independently sampled from binomial distributions with parameters logit($\eta_1$) and 30, the elements of Z5 are assumed to be indpendently sampled from Poisson distributions with parameters log($\eta_5$) and Z6 are independently sampled from normal distributions with mean $\eta_6$ and variance $\sigma_{\delta}^2$.
+
+In the GENERATED QUANTITIES section, the covariance matrix $T=AA^T$ at lag zero together with the corresponding correlation matrix are computated. In assition, the exponential values of the regression coefficients used to compute odds and risk ratos are computed. 
+
+## Data Preparation and Execution of STAN code
+Pick out x,y coordinates:
+
+>Coords<-cbind(CoBRASim$x,CoBRASim,y)
+
+Find unique coordinates:
+
+> Sites<-unique(Coords)
+
+Create site index mapping individual observations in the full data set to the unique Sites:
+
+> i<-1
+> site_ind<-sapply(1:nrow(Coords),function(i) which(Coords[i,1]==Sites[,1]&Coords[i,2]==Sites[,2]))
+
+Create design matrix:
+> Intercept<-rep(1,nrow(CoBRASim))
+> Xmat<-cbind(Intercept,CoBRASim$edyrs,CoBRASim$male,CoBRASim$age,CoBRASim$black,CoBRASim$apoe)
+

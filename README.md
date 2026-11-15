@@ -67,7 +67,7 @@ Create design matrix:
 > Intercept<-rep(1,nrow(CoBRASim))
 > Xmat<-cbind(Intercept,CoBRASim$edyrs,CoBRASim$male,CoBRASim$age,CoBRASim$black,CoBRASim$apoe)
 
-Create object containing data to be input into STAN for Q=2, Q=3, and Q=4 LMCs:
+Create objects containing data to be input into STAN for Q=2, Q=3, and Q=4 LMCs:
 
 >LMC2Dat<-list(NObs=as.integer(268),NSite=as.integer(188),P=as.integer(8),K=as.integer(6),Q=as.integer(2),X=Xmat,Loc=Sites,Z1=CoBRASim$MOCA,Z2=CoBRASim$WordRec,Z3=CoBRASim$ReyFig,Z4=CoBRASim$BNT,Z5=CoBRASim$Fluency,Z6=CoBRASim$Executive,Z7=CoBRASim$Clock,Z8=CoBRASim$Logical,Site=site_ind)
 >LMC3Dat<-list(NObs=as.integer(268),NSite=as.integer(188),P=as.integer(8),K=as.integer(6),Q=as.integer(3),X=Xmat,Loc=Sites,Z1=CoBRASim$MOCA,Z2=CoBRASim$WordRec,Z3=CoBRASim$ReyFig,Z4=CoBRASim$BNT,Z5=CoBRASim$Fluency,Z6=CoBRASim$Executive,Z7=CoBRASim$Clock,Z8=CoBRASim$Logical,Site=site_ind)

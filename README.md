@@ -1,0 +1,80 @@
+# MSGLMM
+The following describes the implementation of STAN code used to draw samples from the posterior distribution of Multivariate Spatial Generalized Mixed Model (MSGLMM) given simulated Alzheimer's cognitive function data in the Excel spreadsheet CoBRASim.xlsx. R functions are also provided for computing matrices of direct- and cross-covariance functions, computing correlations in latent random fields at lag zero, and Wald's tests for the null hypothesis that a given predictor has zero impact on all dependent variables together with simultaneous confidence intervals. 
+
+## Simulated Alzheimer's Cognitive Function Data
+The Excel spreadsheet CoBRASim.xlsx contains the following variables:
+
+ID: Identification number, Discrete, 1-268
+
+x: X coordinate, continuous, $-20\le x \le +20$
+
+y: Y coordinate, continuous, $-20\le y \le +20$
+
+edyrs: Years education, count $\ge 0$
+
+age: Age in Years
+
+black: Black race indicator, binary
+
+apoe: Indicator for Apoe genetic variant
+
+MOCA: Montreal Cognitive Assessment, discrete, 0-30
+
+WordRec: Number of Words Recalled, discrete, 0-10
+
+ReyFig: Rey Figure, discrete, 0-24
+
+BNT: Boston Naming Test, discrete, 0-30
+
+Fluency: Language Fluency, count, $\ge 0$
+
+Executive: Log Executive Task Time, continuous $-\inf < x +\inf$
+
+Clock: Clock Drawing, discrete, 0-15
+
+Logical: Logical Memory, discrete, 0-25
+
+## STAN Code
+Stan code is partitioned into several sections including the DATA, TRANSFORMED DATA, PARAMETERS, TRANSFORMED PARAMETERS, MODEL, and GENERATED QUANTITIES sections. The DATA section is used to describe the input data. It includes the number of observations (NObs), the number of unique sites (NSites), the number of dependent variables (P), the number of independent variables (K), and the number of latent random fields (Q) in the LMC. This is followed by the $\text{NObs}\times\text{K}$ design matrix $\mathbf{X}$, and the matrix Loc of unique $x,y$ coordinates of study sites. After this, each input variable is specified as an $\text{NObs}\times 1$ vector, from $\text{Z}_1,\cdots,\text{Z}_P$. Discrete variables are specified as integer level variables with a lower bound of zero, and continuous variables are specified as real variables. Finally, the $\text{NObs}\times 1$ vector Site is specified, which contains the unique site number for each of the observations.
+
+The TRANSFORMED DATA section creates the NObs x NSite matrix mapping each of the observations to the study sites.
+
+The PARAMETERS and TRANSFORMED sections are used to specify the model parameters. The PARAMETERS are parameters that may be specified directly, such as the $\text{P}\times\text{K}$ matrix of regression coefficients $\mathbf{B}$; here under the name 'betas', and $\sigma_{\delta}^2$ (vardelta) for the log normally distributed variable \textit{logexec}. Additional parameters include the differences (diff) between range parameters for the latent random fields $\xi_1\cdots,\xi_q$, and the components $\Upsilon$ and $\mu_{\mathbf{A}}$ of the matrix normal model $\text{MN}\left(\mu_{\mathbf{A}},\Upsilon,\Phi\right)$. The collection of Q $\text{Nsite}\times 1$ vectors $w$ are used to generate the latent random fields $\xi_1,\cdots,\xi_q$ using the method of Cholesky decomposition. The TRANSFORMED PARAMETERS section is used to compute the remaining parameters of interest including the ranges $\alpha_1,\cdots,\alpha_q$, and the coregionalization matrix $\mathbf{A}$. First, the dimensions of each of these parameters must be specified, the $\text{Q}\times1$ vector $\alpha$ (alpha), and the $\text{P}\times\text{Q}$ matrix $\mathbf{A}$. To generate samples from the matrix normal distribution, the $\text{Q}\times\text{Q}$ matrix L\_upsilon must also be specified, which will be equal to the Cholesky decomposition of $\Upsilon$. The remainder of the \textit{transformed parameters} section is comprised of code for computing $\alpha$ from diff, generations of samples from the matrix normal distribution in two steps, the first being the Cholesky decomposition L\_upsilon of $\Upsilon$ and the second the computation of $\mathbf{A}=\mu_{\mathbf{A}}\Upsilon^{1/2}$, where $\Upsilon^{1/2}$ is L\_upsilon, where phi and zeta were generated in the PRIORS section below. 
+
+The remaining details of the model are specified in the MODEL section. First, the dimensions of the variables of the model must be specified including the $P$ $\text{NObs}\times1$ canonical vectors $\eta_1,\cdots,\eta_P$, the $\text{Q}$ covariance matrices $\Psi_1,\cdots,\Psi_Q$ of the random fields $\xi_1,\cdots,\xi_Q$, their  corresponding Cholesky decompositions $\Psi_1^{1/2},\cdots,\Psi_Q^{1/2}$ (denoted by L\_Psi), the latent random fields $\xi_1,\cdots,\xi_Q$, and the latent random field $\varepsilon=\mathbf{A}\xi$. The remainder of the \textit{model} section is comprised of the computation of the latent random fields $\xi$, the latent random fields $\varepsilon$, the canonical vectors $\eta$, and specification of the priors, and finally the distributions of the individual outcomes. For each $i=1,\cdots,Q$, the Cholesky method is used to generate realizations of the latent random fields $\xi_i=\Psi\left(\alpha_i\right)^{1/2}w$ at the NSite sample sites, where $w\sim\text{N}\left(0,\mathbf{I}_{NSite}\right)$ as generated in the first line under the specification of the PRIORS, and $\Psi\left(\alpha_i\right)^{1/2}$ is the Cholesky decomposition of $\Psi\left(\alpha_i\right)$ which is computed using the 'gp\_exponential\_cov' function of STAN. Next, we compute $\varepsilon=\mathbf{A}\xi$. For each outcome $i$, the canonical vector is $\eta_i=X\beta_i+\mathbf{S}\varepsilon$, where $\beta_i$ is the vector of regression coefficients for that variable, and $\mathbf{S}$ is the matrix SiteToObs mapping observations to study sites. 
+
+Under PRIORS, the elements of $w$ are indpendently sampled from a standard normal distribution, and the differences between the range parameters are indepedently sampled from the inverse gamma distribution with parameters 2 and 10. To generate samples from the matrix normal distribution, with sample $\Phi\sim InvWishart(P+4,2I_P)$ and $\zeta\sim N(0,0.5)$. Then, as specified in the TRANSFORMED PRAMETERS section, $A = \Phi^{1/2}\zeta$ will have a matrix Normal distribution with prameters I and $\Phi$. The regression coefficients are indepdnently sampled from normal distribution. One dependent variable, Z6 is assumed to be sampled from $N(\eta_6,\sigma_{\delta}^2)$, where vardelta= $\sigma_{\delta}^2$. After the prior distribution for the regression coeffients is specified, code specifies that $\sigma_{\delta}^2\sim InvGamma(3,2)$. 
+
+The remainder of the DATA section specifies the distributions of each of the dependent variables $Z_1,\cdots\Z_P$. For example, the elements of Z1 are assumed to be independently sampled from binomial distributions with parameters logit($\eta_1$) and 30, the elements of Z5 are assumed to be indpendently sampled from Poisson distributions with parameters log($\eta_5$) and Z6 are independently sampled from normal distributions with mean $\eta_6$ and variance $\sigma_{\delta}^2$.
+
+In the GENERATED QUANTITIES section, the covariance matrix $T=AA^T$ at lag zero together with the corresponding correlation matrix are computated. In assition, the exponential values of the regression coefficients used to compute odds and risk ratos are computed. 
+
+## Data Preparation and Execution of STAN code
+The following is for fitting the MSGLMM in R: Pick out x,y coordinates:
+
+>Coords<-cbind(CoBRASim$x,CoBRASim,y)
+
+Find unique coordinates:
+
+> Sites<-unique(Coords)
+
+Create site index mapping individual observations in the full data set to the unique Sites:
+
+> i<-1
+> site_ind<-sapply(1:nrow(Coords),function(i) which(Coords[i,1]==Sites[,1]&Coords[i,2]==Sites[,2]))
+
+Create design matrix:
+> Intercept<-rep(1,nrow(CoBRASim))
+> Xmat<-cbind(Intercept,CoBRASim$edyrs,CoBRASim$male,CoBRASim$age,CoBRASim$black,CoBRASim$apoe)
+
+Create objects containing data to be input into STAN for Q=2, Q=3, and Q=4 LMCs:
+
+>LMC2Dat<-list(NObs=as.integer(268),NSite=as.integer(188),P=as.integer(8),K=as.integer(6),Q=as.integer(2),X=Xmat,Loc=Sites,Z1=CoBRASim$MOCA,Z2=CoBRASim$WordRec,Z3=CoBRASim$ReyFig,Z4=CoBRASim$BNT,Z5=CoBRASim$Fluency,Z6=CoBRASim$Executive,Z7=CoBRASim$Clock,Z8=CoBRASim$Logical,Site=site_ind)
+>LMC3Dat<-list(NObs=as.integer(268),NSite=as.integer(188),P=as.integer(8),K=as.integer(6),Q=as.integer(3),X=Xmat,Loc=Sites,Z1=CoBRASim$MOCA,Z2=CoBRASim$WordRec,Z3=CoBRASim$ReyFig,Z4=CoBRASim$BNT,Z5=CoBRASim$Fluency,Z6=CoBRASim$Executive,Z7=CoBRASim$Clock,Z8=CoBRASim$Logical,Site=site_ind)
+>LMC4Dat<-list(NObs=as.integer(268),NSite=as.integer(188),P=as.integer(8),K=as.integer(6),Q=as.integer(4),X=Xmat,Loc=Sites,Z1=CoBRASim$MOCA,Z2=CoBRASim$WordRec,Z3=CoBRASim$ReyFig,Z4=CoBRASim$BNT,Z5=CoBRASim$Fluency,Z6=CoBRASim$Executive,Z7=CoBRASim$Clock,Z8=CoBRASim$Logical,Site=site_ind)
+
+Execute STAN code.  For example, the Q=4 model may be exeduted using:
+
+>MatMod4thin1<-stan("MatNorm.stan",data=LMC4Dat,chains=4,warmup=1000,iter=3000,thin=5,cores=4,refresh=0)
+
+In this example, 4 independent Markov chains are generated using the Hamiltonian Markov Chain algorithm, on each of 4 cores. For each chain, there is a warmup of 1,000 iterates followed by 2,000 post-warm-up iterates for a total of 3,000 iterates. All chains are thinned, retaining every 5th iterate.

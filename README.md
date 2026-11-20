@@ -35,7 +35,7 @@ Clock: Clock Drawing, discrete, 0-15
 Logical: Logical Memory, discrete, 0-25
 
 ## STAN Code
-Stan code is partitioned into several sections including the DATA, TRANSFORMED DATA, PARAMETERS, TRANSFORMED PARAMETERS, MODEL, and GENERATED QUANTITIES sections. The DATA section is used to describe the input data. It includes the number of observations (NObs), the number of unique sites (NSites), the number of dependent variables (P), the number of independent variables (K), and the number of latent random fields (Q) in the LMC. This is followed by the $\text{NObs}\times\text{K}$ design matrix $\mathbf{X}$, and the matrix Loc of unique $x,y$ coordinates of study sites. After this, each input variable is specified as an $\text{NObs}\times 1$ vector, from $\text{Z}_1,\cdots,\text{Z}_P$. Discrete variables are specified as integer level variables with a lower bound of zero, and continuous variables are specified as real variables. Finally, the $\text{NObs}\times 1$ vector Site is specified, which contains the unique site number for each of the observations.
+Stan code MatNorm.stan is partitioned into several sections including the DATA, TRANSFORMED DATA, PARAMETERS, TRANSFORMED PARAMETERS, MODEL, and GENERATED QUANTITIES sections. The DATA section is used to describe the input data. It includes the number of observations (NObs), the number of unique sites (NSites), the number of dependent variables (P), the number of independent variables (K), and the number of latent random fields (Q) in the LMC. This is followed by the $\text{NObs}\times\text{K}$ design matrix $\mathbf{X}$, and the matrix Loc of unique $x,y$ coordinates of study sites. After this, each input variable is specified as an $\text{NObs}\times 1$ vector, from $\text{Z}_1,\cdots,\text{Z}_P$. Discrete variables are specified as integer level variables with a lower bound of zero, and continuous variables are specified as real variables. Finally, the $\text{NObs}\times 1$ vector Site is specified, which contains the unique site number for each of the observations.
 
 The TRANSFORMED DATA section creates the NObs x NSite matrix mapping each of the observations to the study sites.
 
@@ -78,3 +78,7 @@ Execute STAN code.  For example, the Q=4 model may be exeduted using:
 >MatMod4thin1<-stan("MatNorm.stan",data=LMC4Dat,chains=4,warmup=1000,iter=3000,thin=5,cores=4,refresh=0)
 
 In this example, 4 independent Markov chains are generated using the Hamiltonian Markov Chain algorithm, on each of 4 cores. For each chain, there is a warmup of 1,000 iterates followed by 2,000 post-warm-up iterates for a total of 3,000 iterates. All chains are thinned, retaining every 5th iterate.
+
+## Summarizing Results
+
+MSGLMM.R contains scripts for summarizing the out from fitting the MSGLMM model using STAN. This is facilitated by objects listing various subsets of the parameters of the MSGLMM model, that may be created using the commands found at the beginning of MSGLMM.R. 

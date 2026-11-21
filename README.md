@@ -85,28 +85,29 @@ MSGLMM.R contains scripts for summarizing the out from fitting the MSGLMM model 
 
 The function waldconf carries out Wald's test of the null hypothesis that the regression coefficients for a selected predictor equal to zero for all dependent variables against the alternative that at least one of the coefficients is non-zero. In addition, estimates of the regression coefficients and exponential values of the regression coefficients (e.g., odds or risk ratios) together with corresponding simultaneous 95% confidence intervals are computed. The STAN object created by executing the stan function (see above) and an object containing the parameter list are input into waldconf. For example, to carry out Wald's test for Black race in the q=4 model, call
 > waldconf(MatMod4thin1,par=betaBlackpar)
-$wald
-     Wald's Chi-Square d.f.      p-value
-[1,]          66.03578    8 3.010436e-11
+>$wald
+>
+>    Wald's Chi-Square d.f.      p-value
+>[1,]          66.03578    8 3.010436e-11
+>
+>$conf
+>             Beta         SE       Lower       Upper
+>[1,] -0.246723314 0.07362691 -0.53666113  0.04321450
+>[2,] -0.002979357 0.12744365 -0.50484387  0.49888516
+>[3,]  0.098294080 0.08973406 -0.25507261  0.45166077
+>[4,] -0.478587570 0.11287787 -0.92309303 -0.03408211
+>[5,] -0.053243944 0.04095624 -0.21452686  0.10803897
+>[6,]  0.278706322 0.08951447 -0.07379565  0.63120829
+>[7,] -0.381774881 0.14918803 -0.96926727  0.20571751
+>[8,] -0.128991451 0.07525959 -0.42535865  0.16737575
 
-$conf
-             Beta         SE       Lower       Upper
-[1,] -0.246723314 0.07362691 -0.53666113  0.04321450
-[2,] -0.002979357 0.12744365 -0.50484387  0.49888516
-[3,]  0.098294080 0.08973406 -0.25507261  0.45166077
-[4,] -0.478587570 0.11287787 -0.92309303 -0.03408211
-[5,] -0.053243944 0.04095624 -0.21452686  0.10803897
-[6,]  0.278706322 0.08951447 -0.07379565  0.63120829
-[7,] -0.381774881 0.14918803 -0.96926727  0.20571751
-[8,] -0.128991451 0.07525959 -0.42535865  0.16737575
-
-$exparm
-     Exp(Beta)     Lower     Upper
-[1,] 0.7813569 0.5846972 1.0441618
-[2,] 0.9970251 0.6035998 1.6468842
-[3,] 1.1032872 0.7748602 1.5709190
-[4,] 0.6196580 0.3972883 0.9664921
-[5,] 0.9481487 0.8069231 1.1140912
-[6,] 1.3214192 0.9288615 1.8798806
-[7,] 0.6826487 0.3793609 1.2284061
-[8,] 0.8789815 0.6535353 1.1821984
+>$exparm
+>     Exp(Beta)     Lower     Upper
+>[1,] 0.7813569 0.5846972 1.0441618
+>[2,] 0.9970251 0.6035998 1.6468842
+>[3,] 1.1032872 0.7748602 1.5709190
+>[4,] 0.6196580 0.3972883 0.9664921
+>[5,] 0.9481487 0.8069231 1.1140912
+>[6,] 1.3214192 0.9288615 1.8798806
+>[7,] 0.6826487 0.3793609 1.2284061
+>[8,] 0.8789815 0.6535353 1.1821984

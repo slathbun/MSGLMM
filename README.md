@@ -90,3 +90,9 @@ The function matcovplot creates a matrix of direct- and cross-covariance functio
 >d<-0.1*c(0:100)
 
 >matcovplot(MatMod2thin,MatMod3thin,MatMod4thin,A82par,A83par,A84par,range2par,range3par,range4par,d,8,d8=T)
+
+The function corrsum estimates the correlations between the dependent variables at lag zero. Here, correlations correspond to $\mathbf{AA}^T$. Input the stan object, object containing the list of correlation parameters, and the number of dependent variables p. For example,
+>corrsum(MatMod4thin1,par=corrpar,8)
+
+The function estimates the practical range of the spatial correlation and variance of the latent random field $\epsilon_i(s)$ for dependent variable $i$. Corresponding 95% confidence intervals are also provided. Input the stan object, object containing the parameter list for the coregionalization matrix $\mathbf{A}$, object containing the parameter list for the ranges $\alpha$, and selected dependent variable $i$. For example,
+>practrange(MatMod4thin1,A84par,range4par,1)

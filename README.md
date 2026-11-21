@@ -88,4 +88,5 @@ The function waldconf carries out Wald's test of the null hypothesis that the re
 
 The function matcovplot creates a matrix of direct- and cross-covariance functions for three models. Input the stan output (mod2, mod3, mod4) from three STAN model fits, the correponding parameter lists for the coregionalization matrices (A2,A3,A4), the corresponding parameter lists for the corresponnding range parameters, distances d at which covariance functions are to be computed, and the number of dependent variables p. For example,
 >d<-0.1*c(0:100)
+
 >matcovplot(MatMod2thin,MatMod3thin,MatMod4thin,A82par,A83par,A84par,range2par,range3par,range4par,d,8,d8=T)

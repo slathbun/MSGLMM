@@ -1,4 +1,5 @@
 #
+#
 # List of regression coefficients for years education
 #
 betaEdyrpar<-list("betas[1,2]","betas[2,2]","betas[3,2]","betas[4,2]","betas[5,2]","betas[6,2]","betas[7,2]","betas[8,2]")
@@ -32,7 +33,7 @@ A84par<-list("A[1,1]","A[1,2]","A[1,3]","A[1,4]","A[2,1]","A[2,2]","A[2,3]","A[2
 #
 # Create parameter lists  for correlations at lag zero
 #
-corrpar<-list("coor[1,2]","coor[1,3]","coor[1,4]","coor[1,5]","coor[1,6]","coor[1,7]","coor[1,8]","coor[2,3]","coor[2,4]","coor[2,5]","coor[2,6]","coor[2,7]","coor[2,8]","coor[3,4]","coor[3,5]","coor[3,6]","coor[3,7]","coor[3,8]","coor[4,5]","coor[4,6]","coor[4,7]","coor[4,8]","coor[5,6]","coor[5,7]","coor[5,8]","coor[6,7]","coor[6,8]","coor[7,8]")
+corrpar<-list("corr[1,2]","corr[1,3]","corr[1,4]","corr[1,5]","corr[1,6]","corr[1,7]","corr[1,8]","corr[2,3]","corr[2,4]","corr[2,5]","corr[2,6]","corr[2,7]","corr[2,8]","corr[3,4]","corr[3,5]","corr[3,6]","corr[3,7]","corr[3,8]","corr[4,5]","corr[4,6]","corr[4,7]","corr[4,8]","corr[5,6]","corr[5,7]","corr[5,8]","corr[6,7]","corr[6,8]","corr[7,8]")
 
 #
 # Create range parameter lists
